@@ -179,7 +179,26 @@ window.SKYLINES = (() => {
     return out;
   };
   const cathedral = (x, s = 1, flat = false) => [box(x, 90 * s, 72 * s), tri(x, 92 * s, 32 * s, 72 * s - 1), ...[-1, 1].flatMap((d) => tower(x + d * 55 * s, 28 * s, 128 * s, { top: flat ? null : 'dome' })), box(x - 55 * s, 34 * s, 5 * s, 96 * s), box(x + 55 * s, 34 * s, 5 * s, 96 * s), hole(dome(x, 26 * s, 42 * s, 0)), hole(ellipse(x, 60 * s, 8 * s, 8 * s, 12))];
-  const fourviere = (x, y) => move([box(x, 120, 56), tri(x, 120, 26, 55), ...[-60, 60, -30, 30].flatMap((o, i) => [box(x + o, 20, i < 2 ? 96 : 84), box(x + o, 24, 5, i < 2 ? 95 : 83)]), box(x, 3, 22, 80), hole(dome(x, 24, 36, 0)), ...windows(x, 70, 16, 34, 5, 1)], 0, y);
+  const archHole = (x, y, w, h) => hole([[x - w / 2, y], [x + w / 2, y], ...arc(x, y + h - w / 2, w / 2, w / 2, 0, PI, 8)]);
+  // Notre-Dame de Fourvière seen from the Saône: nave, four crenellated towers, pediment, and the chapel bell tower with the Virgin.
+  const basilica = (bx, y) => {
+    const crown = (x, w, h) => [box(x, w, h, y), box(x, w + 6, 6, y + h - 1), ...[-1, 0, 1].map((o) => box(x + (o * w) / 3, w / 5, 5, y + h + 4))];
+    return [
+      box(bx, 150, 46, y), [[bx - 64, y + 45], [bx + 64, y + 45], [bx + 40, y + 60], [bx - 40, y + 60]], tri(bx - 40, 46, 24, y + 44),
+      ...crown(bx - 76, 22, 92), ...crown(bx - 52, 18, 80), ...crown(bx + 52, 18, 80), ...crown(bx + 76, 22, 92),
+      dome(bx + 18, 34, 15, y + 59), box(bx + 18, 2.5, 10, y + 73),
+      archHole(bx - 40, y, 12, 22), hole(ellipse(bx - 40, y + 34, 5.5, 5.5, 12)), ...[-10, 8, 26, 44].map((o) => archHole(bx + o, y + 14, 7, 20)),
+      box(bx + 110, 14, 64, y), dome(bx + 110, 16, 9, y + 63), box(bx + 110, 3, 6, y + 71), [[bx + 108, y + 76], [bx + 112, y + 76], [bx + 113, y + 84], [bx + 110, y + 93], [bx + 107, y + 84]],
+    ];
+  };
+  // The hill with its plateau, trees on the slopes and the basilica on top, all in one piece.
+  const fourviere = (bx) => [
+    [[-720, 0], [-650, 20], [-600, 44], [-545, 70], [bx - 110, 88], [bx - 96, 92], [bx + 128, 92], [bx + 150, 84], [bx + 185, 66], [bx + 230, 40], [bx + 290, 16], [bx + 350, 0]],
+    blob(-610, 50, 16, 13, 36), blob(-572, 66, 18, 14, 37), blob(-530, 82, 15, 12, 38), blob(bx + 158, 88, 16, 12, 39), blob(bx + 200, 64, 18, 13, 40), blob(bx + 245, 42, 16, 12, 41),
+    ...basilica(bx, 90),
+  ];
+  const crayon = (x) => [box(x, 34, 170), tri(x, 36, 34, 169), ...windows(x, 26, 150, 10, 3, 16, 0.5, 0.35)];
+  const incity = (x) => [box(x, 44, 205), [[x - 22, 204], [x + 22, 204], [x + 18, 222], [x + 8, 236], [x - 8, 236], [x - 18, 222]], box(x, 2.5, 24, 235), ...windows(x, 34, 180, 12, 4, 18, 0.45, 0.4)];
   const mosque = (x, s = 1) => [
     box(x, 150 * s, 58 * s), box(x, 74 * s, 10 * s, 56 * s), dome(x, 88 * s, 50 * s, 64 * s), box(x, 3 * s, 18 * s, 112 * s),
     dome(x - 48 * s, 44 * s, 26 * s, 57 * s), dome(x + 48 * s, 44 * s, 26 * s, 57 * s), dome(x - 76 * s, 24 * s, 14 * s, 57 * s), dome(x + 76 * s, 24 * s, 14 * s, 57 * s),
@@ -255,7 +274,9 @@ window.SKYLINES = (() => {
   };
 
   /* ---------- Scenes ---------- */
-  const L = (...parts) => parts.flatMap(list);
+  // Each part becomes a group that pops up as one piece (a tower and its windows, a hill and what stands on it).
+  let gid = 0;
+  const L = (...parts) => parts.flatMap((p) => { const g = ++gid; return list(p).map((poly) => Object.assign(poly, { group: g })); });
   const nantes = {
     palette: 'france',
     far: L(ridge(-720, 720, 70, 26, 11)),
@@ -264,9 +285,9 @@ window.SKYLINES = (() => {
   };
   const lyon = {
     palette: 'france',
-    far: L(ridge(-720, 720, 60, 20, 31)),
-    mid: L(ridge(-620, -40, 80, 16, 32), fourviere(-360, 84), eiffel(-160, 150).map((p) => Object.assign(p.map(([a, b]) => [a, b + 78]), p.hole && { hole: true })), row(-30, 170, 33, { lo: 50, hi: 90, roofs: ['gable', 'flat'] }), tower(250, 40, 230, { win: [3, 18], top: 'spire' }), tower(320, 50, 150, { win: [4, 12], top: 'slant' }), row(360, 700, 34, { lo: 50, hi: 100, roofs: ['flat'] })),
-    near: L(waves(-700, -380, 7), cypress(-330, 90), cypress(-300, 74), row(-250, -80, 35, { lo: 34, hi: 52, win: false }), tree(200, 60, 8), tree(470, 70, 9), lamp(560)),
+    far: L(ridge(-720, 720, 50, 16, 31)),
+    mid: L(fourviere(-380), row(-10, 210, 33, { lo: 50, hi: 80, roofs: ['mansard', 'flat'] }), crayon(270), incity(350), row(390, 700, 34, { lo: 60, hi: 120, roofs: ['flat'] })),
+    near: L(row(-600, -250, 35, { lo: 30, hi: 48, wlo: 22, whi: 34, roofs: ['gable'] }), waves(-250, -50, 7), tree(160, 60, 8), tree(470, 70, 9), lamp(560)),
   };
   const merredin = {
     palette: 'outback',

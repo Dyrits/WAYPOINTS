@@ -32,4 +32,5 @@ Prototype d'une autre identité : une silhouette marche sur une planète en papi
 
 - Narration : champ `story` de chaque stop, plus `prologue` et `epilogue` dans `data.js`.
 - Décors : `v2/skylines.js`, une scène par lieu (clé = `place`, `online` pour les formations sans coordonnées), trois plans (far, mid, near) et une palette par région.
-- Moteur : `v2/app.js` (SVG, sans dépendance). Flèches gauche / droite pour passer d'une escale à l'autre.
+- Moteur : `v2/app.js` (SVG, sans dépendance). Les décors se replient en quittant une escale et se déplient à l'arrivée (pop-up). Flèches gauche / droite pour passer d'une escale à l'autre.
+- Personnage : `v2/walker.js`, stickman dont l'allure suit la vitesse (arrêt, marche, course, sprint). Banc d'essai : `v2/lab.html`.

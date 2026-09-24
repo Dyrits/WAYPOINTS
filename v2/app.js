@@ -64,7 +64,9 @@
   const ground = el('circle', { class: 'ground' }, world);
   const strata = [1, 2, 3].map((i) => el('circle', { class: `stratum s${i}` }, world));
   const tufts = el('path', { class: 'tufts' }, world);
-  const walker = el('g', { class: 'walker' }, svg);
+  const walker = window.createWalker(svg);
+  // Walker scale (px per body unit, times k) and the distance between two stops, in scene units.
+  const WS = 1.75, SP = 900;
 
   /* ---------- Geometry: flat scene units bent around the planet ---------- */
   let W, H, k, R, cx, cy, S;
@@ -86,14 +88,32 @@
     });
     return out;
   };
-  const toPath = (polys) => polys.map((poly, j) => {
+  // Polygons are prepared once (winding, cut edges, feet pushed into the ground), then drawn at any pop-up opening.
+  const prepare = (polys) => polys.map((poly, j) => {
     // Shapes wind one way and holes the other, so a hole only cuts what it sits on under the nonzero rule.
     const area = poly.reduce((a, [x, y], i) => { const [x2, y2] = poly[(i + 1) % poly.length]; return a + x * y2 - x2 * y; }, 0);
     let pts = (area > 0) === !!poly.hole ? [...poly].reverse() : poly;
     if (!poly.hole) pts = cut(pts, j + 1);
     // Anything standing on the ground is pushed a bit into it, so no gap shows along the curve.
-    return 'M' + pts.map(([x, y]) => polar(x, y <= 0.5 ? -14 : y)).join('L') + 'Z';
-  }).join('');
+    pts = pts.map(([x, y]) => [x, y <= 0.5 ? -14 : y]);
+    return { pts, hole: !!poly.hole, group: poly.group, cx: pts.reduce((a, [x]) => a + x, 0) / pts.length };
+  }).map((p, _, all) => {
+    // A group rises as one piece, from the average position of its shapes.
+    const mates = p.group ? all.filter((q) => q.group === p.group && !q.hole) : [p];
+    return Object.assign(p, { gcx: mates.reduce((a, q) => a + q.cx, 0) / mates.length });
+  });
+  // Pop-up opening from 0 (flat on the ground) to 1 (standing): shapes near the walker rise first, with a small paper bounce.
+  const back = (t) => 1 + 2.4 * (t - 1) ** 3 + 1.4 * (t - 1) ** 2;
+  const render = (prep, open = 1) => {
+    let d = '';
+    for (const p of prep) {
+      const h = open >= 1 ? 1 : back(clamp(open * 1.4 - (Math.abs(p.gcx) / 650) * 0.4));
+      if (h < 0.02) continue;
+      d += 'M' + p.pts.map(([x, y]) => polar(x, y > 0 ? y * h : y)).join('L') + 'Z';
+    }
+    return d;
+  };
+  const toPath = (polys) => render(prepare(polys));
 
   const build = () => {
     W = innerWidth;
@@ -105,11 +125,15 @@
     const horizon = H * (portrait ? 0.52 : 0.72);
     cx = W * (portrait ? 0.5 : 0.4);
     cy = horizon + R;
-    S = (1450 * k) / R;
+    S = (SP * k) / R;
     world.setAttribute('transform', `translate(${cx} ${cy})`);
     ground.setAttribute('r', R);
     strata.forEach((c, i) => c.setAttribute('r', R - [22, 70, 150][i] * k));
-    items.forEach((it) => ['far', 'mid', 'near'].forEach((l, i) => it.paths[i].setAttribute('d', toPath(it.sc[l]))));
+    items.forEach((it) => {
+      it.prep = ['far', 'mid', 'near'].map((l) => prepare(it.sc[l]));
+      it.cache = [new Map(), new Map(), new Map()];
+      it.paths.forEach((path) => (path.q = -1));
+    });
 
     // Grass tufts and pebbles all around the planet: they roll with the ground and show it turning.
     let d = '', a = 0, s = 7;
@@ -145,52 +169,6 @@
       p.text.setAttribute('x', -3 * k);
       p.text.setAttribute('y', -(R + 63.4 * k));
     });
-    walker.dataset.y = cy - R;
-  };
-
-  /* ---------- Walker: a paper traveller, legs driven by the distance walked ---------- */
-  const INK = '#2b2621', INK2 = '#4d443b', WS = 1.75;
-  const limb = (w, c) => el('path', { fill: 'none', stroke: c, 'stroke-width': w, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, walker);
-  const legB = limb(5, INK2), armB = limb(4, INK2);
-  const pack = el('path', { fill: INK2, d: 'M-11 -50h9v19h-9a2 2 0 0 1-2-2v-15a2 2 0 0 1 2-2zM-12 -54h11v4h-11z' }, walker);
-  const torso = limb(9, INK), legF = limb(5, INK);
-  const head = el('circle', { r: 5.2, fill: INK }, walker);
-  const hat = el('path', { fill: INK, d: 'M-6 -60.5h17q-2-1.4-5.5-1.5v-4q-3.5-1.8-7 0v4q-3.5.1-4.5 1.5z' }, walker);
-  const scarf = el('path', { fill: 'var(--red)' }, walker);
-  const armF = limb(4, INK);
-
-  let phase = 0, amp = 0, dir = 1;
-  const pose = (now) => {
-    const leg = (p) => {
-      const a1 = 0.5 * amp * Math.sin(p), kn = amp * (0.1 + 0.85 * Math.max(0, Math.cos(p)) ** 1.5), a2 = a1 - kn;
-      const kx = 16 * Math.sin(a1), ky = 16 * Math.cos(a1);
-      return [kx, ky, kx + 15 * Math.sin(a2), ky + 15 * Math.cos(a2)];
-    };
-    const lf = leg(phase), lb = leg(phase + Math.PI);
-    // The lowest foot always touches the ground, which gives the body its bob.
-    const hip = -Math.max(lf[3], lb[3]);
-    const legPath = ([kx, ky, fx, fy]) => `M0 ${hip}L${kx} ${hip + ky}L${fx} ${hip + fy}l3.5 0`;
-    legF.setAttribute('d', legPath(lf));
-    legB.setAttribute('d', legPath(lb));
-    const sh = hip - 18.5, lean = 1.5 + amp;
-    const arm = (p) => {
-      const b1 = -0.45 * amp * Math.sin(p), b2 = b1 - 0.3 - 0.35 * amp;
-      const ex = lean + 11 * Math.sin(b1), ey = sh + 11 * Math.cos(b1);
-      return `M${lean} ${sh}L${ex} ${ey}L${ex - 10 * Math.sin(b2)} ${ey + 10 * Math.cos(b2)}`;
-    };
-    armF.setAttribute('d', arm(phase + Math.PI));
-    armB.setAttribute('d', arm(phase));
-    torso.setAttribute('d', `M0 ${hip}L${lean} ${sh}`);
-    const hx = lean + 1.2, hy = sh - 6.5;
-    head.setAttribute('cx', hx);
-    head.setAttribute('cy', hy);
-    hat.setAttribute('transform', `translate(${hx - 2.5} ${hy + 56})`);
-    pack.setAttribute('transform', `translate(${lean * 0.5} ${hip + 30})`);
-    // Scarf tail flapping in the wind of the walk.
-    const t = now / 180, fl = 2 + amp * 5;
-    const tail = [1, 2, 3].map((j) => [lean - 2 - j * 4.5 - amp * j * 1.5, sh + 1.5 + j * (1.6 - amp * 0.9) + Math.sin(t + j * 1.3) * fl * j * 0.22]);
-    scarf.setAttribute('d', `M${lean - 3.5} ${sh - 2.5}h7.5v4h-4L${tail[0]}L${tail[1]}L${tail[2]}l-1 -2.6L${tail[1][0] + 0.5} ${tail[1][1] - 3}L${tail[0][0]} ${tail[0][1] - 3}L${lean - 3.5} ${sh + 1}z`);
-    walker.setAttribute('transform', `translate(${cx} ${walker.dataset.y}) scale(${WS * k * dir} ${WS * k})`);
   };
 
   /* ---------- Narration and card ---------- */
@@ -294,7 +272,7 @@
   const track = $('#track');
   const HOLD = 0.4, TOTAL = M - 1 + HOLD;
   track.style.height = `${M * 100}vh`;
-  let target = 0, pos = 0, active = -1;
+  let target = 0, pos = 0, vpos = 0, active = -1;
   const maxScroll = () => document.documentElement.scrollHeight - innerHeight;
   const activate = (p) => {
     if (p === active) return;
@@ -309,13 +287,11 @@
     const f = clamp(scrollY / maxScroll()) * TOTAL;
     const seg = Math.min(M - 2, Math.floor(f)), t = ease(clamp((f - seg - HOLD) / (1 - HOLD)));
     target = seg + t;
-    rail.style.setProperty('--p', clamp((target - 1) / (N - 1)));
-    activate(Math.round(target));
   };
   const goTo = (p) => {
     p = clamp(p, 0, M - 1);
     // Far jumps skip ahead so the walk only replays the last stretch.
-    if (Math.abs(p - pos) > 1.5) pos = p - Math.sign(p - pos) * 1.2;
+    if (Math.abs(p - pos) > 1.5) { pos = p - Math.sign(p - pos) * 1.1; vpos = 0; }
     scrollTo({ top: p < M - 1 ? ((p + HOLD / 2) / TOTAL) * maxScroll() : maxScroll(), behavior: 'instant' });
   };
   addEventListener('scroll', onScroll, { passive: true });
@@ -328,31 +304,48 @@
   });
 
   /* ---------- Frame loop ---------- */
+  // Each layer folds flat as the walker leaves a stop and unfolds on arrival: near first, far last.
+  const FOLD = [[0.28, 0.62], [0.2, 0.52], [0.12, 0.44]];
+  const unfold = (d, [a, b]) => 1 - ease(clamp((d - a) / (b - a)));
+  // Top speed: a sprint of 400 body units per second, in stops per second.
+  const VMAX = (400 * WS) / SP;
+  let last = performance.now();
   const frame = (now) => {
-    const prev = pos;
-    pos = reduced ? target : pos + (target - pos) * 0.09;
-    if (Math.abs(target - pos) < 1e-4) pos = target;
-    const v = pos - prev;
-    if (Math.abs(v) > 1e-5) dir = v > 0 ? 1 : -1;
-    amp += ((Math.abs(v) > 4e-4 ? 1 : 0) - amp) * 0.12;
-    // One stride cycle for about 50 scene units walked.
-    phase += clamp((v * S * R) / (50 * k * WS), -0.5, 0.5) * 2 * Math.PI;
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (reduced) { pos = target; vpos = 0; }
+    else {
+      // The walker chases the scroll position like a spring, capped at sprint speed so the legs never blur into nonsense.
+      const want = clamp((target - pos) * 3.2, -VMAX, VMAX);
+      vpos += (want - vpos) * Math.min(1, dt * 6);
+      pos += vpos * dt;
+      if (Math.abs(target - pos) < 2e-4 && Math.abs(vpos) < 2e-3) { pos = target; vpos = 0; }
+    }
 
     items.forEach((it, p) => {
-      const d = p - pos, show = Math.abs(d) < 1.7;
-      it.paths.forEach((path) => {
-        path.style.display = show ? '' : 'none';
-        if (show) path.setAttribute('transform', `rotate(${(d * S) / RAD})`);
+      const d = Math.abs(p - pos);
+      it.paths.forEach((path, l) => {
+        const q = d < FOLD[l][1] ? Math.round(unfold(d, FOLD[l]) * 48) : 0;
+        if (q !== path.q) {
+          path.q = q;
+          if (q && !it.cache[l].has(q)) it.cache[l].set(q, render(it.prep[l], q / 48));
+          path.setAttribute('d', q ? it.cache[l].get(q) : '');
+        }
+        if (q) path.setAttribute('transform', `rotate(${((p - pos) * S) / RAD})`);
       });
     });
     posts.forEach((p, i) => {
-      const d = i + 0.5 - pos, show = Math.abs(d) < 1.2;
-      p.g.style.display = show ? '' : 'none';
-      if (show) p.g.setAttribute('transform', `rotate(${(d * S) / RAD})`);
+      const d = i + 0.5 - pos, h = back(1 - ease(clamp((Math.abs(d) - 0.22) / 0.26)));
+      p.g.style.display = h > 0.02 ? '' : 'none';
+      if (h > 0.02) p.g.setAttribute('transform', `rotate(${(d * S) / RAD}) translate(0 ${-R}) scale(1 ${h}) translate(0 ${R})`);
     });
     tufts.setAttribute('transform', `rotate(${(-pos * S) / RAD})`);
     clouds.setAttribute('transform', `translate(${cx} ${cy}) rotate(${(-pos * S * 0.35) / RAD - now * 0.0004})`);
-    pose(now);
+    // Story, card and rail follow the walker, not the scrollbar: they switch as he passes the signpost.
+    activate(clamp(Math.round(pos), 0, M - 1));
+    rail.style.setProperty('--p', clamp((pos - 1) / (N - 1)));
+    walker.update(dt, (vpos * SP) / WS, now);
+    walker.place(cx, cy - R, WS * k);
     requestAnimationFrame(frame);
   };
 

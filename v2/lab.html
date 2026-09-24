@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Banc d’essai · stickman</title>
+  <style>
+    :root { --red: #c8402f; }
+    body { margin: 0; background: #efe8da; font: 14px/1.4 ui-monospace, monospace; color: #2b2621; }
+    svg { display: block; width: 100vw; height: 70vh; }
+    .ui { padding: 1rem 2rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+    input[type=range] { width: 28rem; }
+    button { font: inherit; padding: .4rem .8rem; border: 1px solid #2b2621; background: #fbf7ee; border-radius: 99px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <svg id="s" viewBox="-400 -260 800 300"><rect x="-400" y="0" width="800" height="60" fill="#2b2621"/><path id="ticks" fill="#2b2621"/></svg>
+  <div class="ui">
+    <label>Vitesse <input id="v" type="range" min="-420" max="420" value="0"> <b id="out">0</b> u/s</label>
+    <button data-v="0">Arrêt</button><button data-v="50">Marche</button><button data-v="160">Course</button><button data-v="400">Sprint</button><button data-v="-50">Demi-tour</button>
+    <label><input id="auto" type="checkbox" checked> Démo auto</label>
+  </div>
+  <script src="walker.js"></script>
+  <script>
+    const svg = document.getElementById('s'), ticks = document.getElementById('ticks'), range = document.getElementById('v'), out = document.getElementById('out'), auto = document.getElementById('auto');
+    const w = createWalker(svg);
+    let v = 0, x = 0, last = performance.now();
+    const set = (n) => { range.value = n; auto.checked = false; };
+    document.querySelectorAll('button').forEach((b) => b.onclick = () => set(+b.dataset.v));
+    range.oninput = () => (auto.checked = false);
+    const program = [[0, 1.5], [50, 3], [160, 3], [400, 3], [0, 2], [-50, 3], [-400, 2], [0, 2]];
+    const frame = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      if (auto.checked) {
+        let t = (now / 1000) % program.reduce((a, [, d]) => a + d, 0), i = 0;
+        while (t > program[i][1]) t -= program[i++][1];
+        range.value = program[i][0];
+      }
+      // Ease the ground speed like the scroll driver does.
+      v += (+range.value - v) * Math.min(1, dt * 3);
+      out.textContent = Math.round(v);
+      x = (x - v * dt * 2) % 40;
+      let d = '';
+      for (let t = -440; t < 440; t += 40) d += `M${t + x - 1.5} 0l1.5 -7l1.5 7z`;
+      ticks.setAttribute('d', d);
+      w.update(dt, v, now);
+      w.place(0, 0, 2);
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
