@@ -1,6 +1,6 @@
 // All page content lives here: edit this file to update the site, no build step needed.
 // Each stop of the journey is a location on the globe; stops are shown in the order listed (oldest first).
-// story: '…' is the line narrated above the scene in the V2 walk (v2/).
+// story: '…' is the line narrated above the scene in the V2 and V3 walks (V2/, V3/).
 // A stop with type: 'formation' is a diploma training; without coords it is online, and only the places in remoteFrom are shown, as yellow dots.
 // An entry can add remote: true to be flagged as done remotely on the card, and context: '…' for a framing label that is not a skill (e.g. a visa).
 // Remote missions add remoteFrom: ['Lieu', longitude, latitude], or a list of them, the places I worked from; add remoteRoute: true when the list is an itinerary in order; 'sur place' in the list marks time spent on site.
@@ -28,7 +28,7 @@ window.PROFILE = {
   ],
 
 
-  // Narration for the V2 walk (v2/): the opening and closing pages; each stop also carries its own story line.
+  // Narration for the V2 and V3 walks (V2/, V3/): the opening and closing pages; each stop also carries its own story line.
   prologue: { title: 'Carnet de route', text: 'Plus de dix ans de code, trente-six pays, un sac à dos. Voici le chemin, escale par escale.', hint: 'Faites défiler pour marcher' },
   epilogue: { title: 'Prochaine escale ?', text: 'Le carnet reste ouvert. La suite s’écrit peut-être avec vous.' },
 

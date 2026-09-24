@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dylan J. Gerrits · Ingénieur architecture, développement et outillage IA</title>
+  <meta name="description" content="Ingénieur polyvalent en architecture et développement de systèmes d’information et d’outillage IA. Développeur, architecte logiciel, formateur et tuteur.">
+  <meta property="og:title" content="Dylan J. Gerrits · Ingénieur architecture, développement et outillage IA">
+  <meta property="og:description" content="Plus de dix ans de projets logiciels, de Nantes à Kuala Lumpur.">
+  <meta name="theme-color" content="#0c141c">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23e0322b'/><path d='M13 7h6v6h6v6h-6v6h-6v-6H7v-6h6z' fill='%23fff'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"><span></span></div>
+
+  <div class="intro" id="intro">
+  <header class="hero">
+    <p class="mono hero-coords" data-reveal></p>
+    <h1 id="hero-name" class="hero-name"></h1>
+    <p id="hero-roles" class="mono hero-roles" data-reveal></p>
+    <p id="hero-title" class="hero-title" data-reveal></p>
+    <p id="hero-tagline" class="hero-tagline" data-reveal></p>
+    <nav id="hero-links" class="links" data-reveal></nav>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <section class="profile" id="profile">
+    <div class="profile-copy">
+      <p class="mono eyebrow" data-reveal>01 · Profil</p>
+      <h2 data-reveal>Un couteau <em>franco-suisse</em>.</h2>
+      <p data-reveal>Polyvalent par nature : de l’architecture à la mise en production, jusqu’à la transmission.</p>
+      <ul id="about" class="about"></ul>
+    </div>
+  </section>
+  <a href="#skills" class="scroll-cue mono" aria-label="Voir la suite"><span></span>Découvrir</a>
+  </div>
+
+  <section class="skills" id="skills">
+    <p class="mono eyebrow" data-reveal>02 · Boîte à outils</p>
+    <h2 data-reveal>Ce que j’ai dans le <em>sac</em>.</h2>
+    <div class="skills-grid" id="skills-grid"></div>
+    <div class="langs" id="langs"></div>
+  </section>
+
+  <section class="edu" id="edu">
+    <p class="mono eyebrow" data-reveal>03 · Formation continue</p>
+    <h2 data-reveal>En apprentissage <em>constant</em>.</h2>
+    <ol class="edu-list" id="edu-list"></ol>
+  </section>
+
+  <section class="journey" id="journey">
+    <div class="stage">
+      <p class="mono eyebrow stage-eyebrow">04 · Le voyage <span class="note"><span><b class="d-job"></b>Lieu de mission</span> <span><b class="d-remote"></b>Télétravail depuis</span> <span><b class="d-training"></b>Formation depuis</span></span></p>
+      <canvas id="globe" aria-label="Globe du parcours professionnel" role="img"></canvas>
+      <article class="card" id="card" aria-live="polite"></article>
+      <div class="pick-menu" id="pick-menu" hidden></div>
+      <ol class="rail" id="rail"></ol>
+    </div>
+  </section>
+
+  <footer class="contact">
+    <p class="mono eyebrow" data-reveal>05 · Contact</p>
+    <h2 data-reveal>Prochaine <em>escale</em> ?</h2>
+    <nav id="footer-links" class="links big" data-reveal></nav>
+    <p class="mono small" id="copyright"></p>
+  </footer>
+
+  <script src="../shared/data.js"></script>
+  <script src="land.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
