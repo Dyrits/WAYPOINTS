@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dylan J. Gerrits · Carnet de route</title>
+  <meta name="description" content="Ingénieur polyvalent en architecture et développement de systèmes d’information et d’outillage IA. Dix ans de projets, racontés escale par escale.">
+  <meta property="og:title" content="Dylan J. Gerrits · Carnet de route">
+  <meta property="og:description" content="Dix ans de code, trente-six pays, un sac à dos.">
+  <meta name="theme-color" content="#efe8da">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23c8402f'/><path d='M13 7h6v6h6v6h-6v6h-6v-6H7v-6h6z' fill='%23fff'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <svg id="scene" aria-hidden="true"></svg>
+  <div class="paper" aria-hidden="true"></div>
+
+  <header class="id">
+    <h1 id="name"></h1>
+    <p id="title"></p>
+    <nav id="links" class="mono"></nav>
+  </header>
+
+  <section class="story" aria-live="polite">
+    <p class="chapter mono" id="chapter"></p>
+    <h2 class="tale" id="tale"></h2>
+    <p class="hint mono" id="hint"></p>
+  </section>
+
+  <article class="card" id="card" hidden></article>
+
+  <ol class="rail mono" id="rail" aria-label="Chronologie"></ol>
+
+  <div class="track" id="track"></div>
+
+  <script src="../data.js"></script>
+  <script src="skylines.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

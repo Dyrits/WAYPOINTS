@@ -25,3 +25,11 @@ Tout le contenu est dans `data.js`.
 - `app.js` rendu du contenu, globe canvas, animations au scroll
 - `data.js` contenu
 - `land.js` masque des continents (Natural Earth 110m, domaine public)
+
+## V2 · Carnet de route (`v2/`)
+
+Prototype d'une autre identité : une silhouette marche sur une planète en papier découpé ; le scroll fait tourner le monde, chaque escale fait lever sa skyline. Ouvrir `v2/index.html`. Même `data.js` que la V1.
+
+- Narration : champ `story` de chaque stop, plus `prologue` et `epilogue` dans `data.js`.
+- Décors : `v2/skylines.js`, une scène par lieu (clé = `place`, `online` pour les formations sans coordonnées), trois plans (far, mid, near) et une palette par région.
+- Moteur : `v2/app.js` (SVG, sans dépendance). Flèches gauche / droite pour passer d'une escale à l'autre.

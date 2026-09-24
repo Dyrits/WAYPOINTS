@@ -1,0 +1,153 @@
+@property --sky1 { syntax: '<color>'; inherits: true; initial-value: #efe8da; }
+@property --sky2 { syntax: '<color>'; inherits: true; initial-value: #e0d6c2; }
+@property --sun { syntax: '<color>'; inherits: true; initial-value: #e8c39a; }
+
+:root {
+  --ink: #2b2621;
+  --ink-soft: #2b2621b0;
+  --red: #c8402f;
+  --blue: #3f7fb3;
+  --gold: #b88a1c;
+  --card: #fbf7ee;
+  --serif: 'Fraunces', Georgia, serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: linear-gradient(to bottom, var(--sky1), var(--sky2) 70%);
+  transition: --sky1 1.6s, --sky2 1.6s, --sun 1.6s;
+  background-attachment: fixed;
+  color: var(--ink);
+  font: 350 1rem/1.55 var(--serif);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+.mono { font-family: var(--mono); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; }
+.track { pointer-events: none; }
+
+/* ---------- Scene ---------- */
+#scene { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+.sun circle { fill: var(--sun); }
+.sun .ring { fill: none; stroke: var(--sun); stroke-width: 2; stroke-dasharray: 3 7; opacity: .8; }
+.clouds { fill: #fcf9f2; opacity: .85; filter: drop-shadow(0 3px 3px rgb(60 40 20 / .12)); }
+.layer { filter: drop-shadow(0 -1px 0 rgb(255 255 255 / .35)) drop-shadow(0 5px 6px rgb(50 35 20 / .2)); }
+.layer path { transition: fill 1s; }
+.ground { fill: var(--ink); }
+.tufts { fill: var(--ink); }
+/* Paper strata inside the planet. */
+.stratum { fill: none; stroke-width: 1.5; stroke: rgb(239 230 210 / .08); stroke-dasharray: 2 9; }
+.stratum.s2 { stroke-dasharray: none; stroke: rgb(0 0 0 / .12); stroke-width: 6; }
+.stratum.s3 { stroke: rgb(239 230 210 / .05); stroke-dasharray: 14 22; stroke-width: 2; }
+.props path { fill: #6b5540; }
+.props text { fill: #f3ead8; font-family: var(--mono); letter-spacing: .08em; }
+.walker { filter: drop-shadow(0 2px 2px rgb(0 0 0 / .25)); }
+
+/* Paper grain and fibres over everything. */
+.paper {
+  position: fixed; inset: 0; pointer-events: none; z-index: 40; mix-blend-mode: multiply; opacity: .55;
+  background-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .38  0 0 0 0 .3  0 0 0 .22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.004 .06' numOctaves='2' seed='9'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .42  0 0 0 0 .32  0 0 0 .18 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
+    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(90 60 30 / .18));
+}
+
+/* ---------- Identity, top right ---------- */
+.id { position: fixed; top: 1.8rem; right: 2.2rem; z-index: 20; text-align: right; max-width: 22rem; }
+.id h1 { font-weight: 400; font-size: 1.35rem; letter-spacing: -.01em; line-height: 1.1; }
+.id p { font-size: .82rem; line-height: 1.35; color: var(--ink-soft); margin-top: .35rem; font-style: italic; }
+.id nav { display: flex; gap: 1rem; justify-content: flex-end; margin-top: .6rem; }
+.id nav a { text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 1px; }
+.id nav a:hover { color: var(--red); }
+
+/* ---------- Narration, top left ---------- */
+.story { position: fixed; top: 2.4rem; left: 3rem; z-index: 20; max-width: min(40rem, 48vw); }
+.chapter { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem 1rem; color: var(--ink-soft); }
+.stamp {
+  display: inline-block; color: var(--red); border: 2px solid var(--red); border-radius: 4px; padding: .3rem .6rem .25rem; font-weight: 600;
+  transform: rotate(-4deg); box-shadow: inset 0 0 0 2px var(--sky1), inset 0 0 0 3px var(--red); opacity: .88;
+}
+.show .stamp { animation: stamp .55s .35s var(--ease) both; }
+@keyframes stamp { from { transform: rotate(-12deg) scale(1.8); opacity: 0; } 60% { opacity: .95; } to { transform: rotate(-4deg) scale(1); opacity: .88; } }
+.tale { font-weight: 300; font-size: clamp(1.45rem, 2.35vw, 2.35rem); line-height: 1.22; letter-spacing: -.012em; margin-top: 1rem; text-wrap: pretty; }
+.tale span { display: inline-block; opacity: 0; transform: translateY(.35em) rotate(2deg); filter: blur(3px); }
+.show .tale span { animation: word .7s var(--ease) forwards; animation-delay: calc(.15s + var(--i) * .035s); }
+@keyframes word { to { opacity: 1; transform: none; filter: none; } }
+.hint { margin-top: 1.4rem; color: var(--ink-soft); }
+.hint .arrow { display: inline-block; animation: nudge 1.6s ease-in-out infinite; }
+@keyframes nudge { 50% { transform: translateY(4px); } }
+.big-links { display: flex; gap: .8rem; flex-wrap: wrap; }
+.big-links a { text-decoration: none; padding: .7rem 1.2rem; border: 1.5px solid var(--ink); border-radius: 99px; background: var(--card); transition: background .3s, color .3s; }
+.big-links a:hover { background: var(--ink); color: var(--card); }
+
+/* ---------- Card: a taped note that unfolds ---------- */
+.card {
+  position: fixed; z-index: 20; right: 2.2rem; top: 10.5rem; width: min(24rem, 32vw); max-height: calc(100vh - 16rem); overflow: auto; overscroll-behavior: contain;
+  background: var(--card); padding: 1.5rem 1.5rem 1.3rem; border-radius: 2px;
+  box-shadow: 0 1px 0 rgb(255 255 255 / .6) inset, 0 12px 28px -8px rgb(60 40 20 / .35), 0 2px 5px rgb(60 40 20 / .12);
+  transform-origin: 50% 0; transform: perspective(1400px) rotateX(-90deg); opacity: 0;
+  scrollbar-width: thin;
+}
+.card::before { content: ''; position: sticky; display: block; top: -1.5rem; margin: -1.5rem auto .6rem; width: 5.5rem; height: 1.4rem; background: rgb(214 196 150 / .7); transform: rotate(-2deg); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
+.card::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, transparent 49.6%, rgb(120 90 50 / .09) 50%, transparent 51.5%); }
+.card.show { animation: unfold .95s var(--ease) forwards; }
+.card.fold { animation: foldup .25s ease-in forwards; opacity: 1; }
+@keyframes unfold {
+  0% { transform: perspective(1400px) rotateX(-90deg) rotate(-1deg); opacity: 0; }
+  30% { opacity: 1; }
+  70% { transform: perspective(1400px) rotateX(8deg) rotate(-1deg); }
+  100% { transform: perspective(1400px) rotateX(0) rotate(-1deg); opacity: 1; }
+}
+@keyframes foldup { from { transform: perspective(1400px) rotateX(0) rotate(-1deg); opacity: 1; } to { transform: perspective(1400px) rotateX(-90deg) rotate(-1deg); opacity: 0; } }
+.card .kind { display: flex; justify-content: space-between; color: var(--red); }
+.card .kind span { color: var(--ink-soft); }
+.card .remote { color: var(--blue); margin-top: .7rem; line-height: 1.6; letter-spacing: .08em; }
+.card .remote.online { color: var(--gold); }
+.entry { margin-top: 1.1rem; }
+.entry + .entry { border-top: 1px dashed rgb(43 38 33 / .25); padding-top: 1rem; }
+.entry h3 { font-weight: 500; font-size: 1.3rem; line-height: 1.15; }
+.entry .role { font-style: italic; margin-top: .15rem; }
+.entry .dates { color: var(--ink-soft); margin: .45rem 0 .5rem; display: flex; flex-wrap: wrap; gap: .4rem .6rem; align-items: center; }
+.badge { border: 1px solid currentColor; border-radius: 99px; padding: .05rem .5rem; font-size: .6rem; }
+.badge.remote-b { color: var(--blue); }
+.entry p { font-size: .92rem; }
+.entry ul { margin-top: .5rem; padding-left: 1rem; font-size: .88rem; }
+.entry li { margin: .2rem 0; }
+.entry li::marker { content: '✕  '; color: var(--red); font-size: .6rem; }
+.parallel { margin-top: 1.1rem; border-top: 1px solid rgb(43 38 33 / .15); padding-top: .8rem; }
+.parallel p { color: var(--ink-soft); margin-bottom: .4rem; }
+.parallel button { display: block; width: 100%; text-align: left; background: none; border: 0; font: inherit; font-size: .88rem; color: inherit; padding: .35rem 0; cursor: pointer; }
+.parallel button:hover b { color: var(--red); }
+.parallel button span { display: block; color: var(--ink-soft); margin-top: .1rem; }
+
+/* ---------- Year rail, on the ground ---------- */
+.rail { position: fixed; z-index: 20; left: 50%; bottom: 1.4rem; transform: translateX(-50%); display: flex; list-style: none; width: min(56rem, 86vw); justify-content: space-between; color: #efe6d2; }
+.rail::before, .rail::after { content: ''; position: absolute; left: 0; right: 0; top: .45rem; height: 1px; background: rgb(239 230 210 / .25); }
+.rail::after { background: var(--red); height: 2px; top: calc(.45rem - .5px); transform-origin: left; transform: scaleX(var(--p, 0)); }
+.rail li { position: relative; width: 1.2rem; height: 2rem; cursor: pointer; display: flex; justify-content: center; }
+.rail li::before { content: ''; width: 7px; height: 7px; margin-top: calc(.45rem - 3.5px); border-radius: 50%; background: #efe6d2; opacity: .5; transition: transform .3s, opacity .3s, background .3s; z-index: 1; }
+.rail li.formation::before { border-radius: 1px; transform: rotate(45deg); }
+.rail li.done::before { background: var(--red); opacity: 1; }
+.rail li.active::before { transform: scale(1.8); background: var(--red); opacity: 1; box-shadow: 0 0 0 2px var(--ink); }
+.rail li.formation.active::before { transform: rotate(45deg) scale(1.8); }
+.rail li span { position: absolute; top: 1rem; font-size: .6rem; letter-spacing: .08em; opacity: .7; white-space: nowrap; }
+.rail li:hover::before { opacity: 1; transform: scale(1.5); }
+
+/* ---------- Small screens: narration on top, card as a sheet ---------- */
+@media (max-width: 900px), (orientation: portrait) {
+  .id { top: 1rem; right: 1rem; left: 1rem; max-width: none; }
+  .id p { display: none; }
+  .id h1 { font-size: 1rem; }
+  .id nav { margin-top: .3rem; }
+  .story { top: 4.6rem; left: 1.2rem; right: 1.2rem; max-width: none; }
+  .tale { font-size: clamp(1.15rem, 5vw, 1.6rem); }
+  .card { left: .8rem; right: .8rem; width: auto; top: auto; bottom: 3.6rem; max-height: 34vh; padding: 1rem 1.1rem; }
+  .card::before { top: -1rem; margin-top: -1rem; }
+  .rail { bottom: .6rem; width: 92vw; }
+  .rail li span { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01s !important; animation-delay: 0s !important; transition-duration: .01s !important; }
+}

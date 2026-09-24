@@ -1,5 +1,6 @@
 // All page content lives here: edit this file to update the site, no build step needed.
 // Each stop of the journey is a location on the globe; stops are shown in the order listed (oldest first).
+// story: '…' is the line narrated above the scene in the V2 walk (v2/).
 // A stop with type: 'formation' is a diploma training; without coords it is online, and only the places in remoteFrom are shown, as yellow dots.
 // An entry can add remote: true to be flagged as done remotely on the card, and context: '…' for a framing label that is not a skill (e.g. a visa).
 // Remote missions add remoteFrom: ['Lieu', longitude, latitude], or a list of them, the places I worked from; add remoteRoute: true when the list is an itinerary in order; 'sur place' in the list marks time spent on site.
@@ -27,16 +28,22 @@ window.PROFILE = {
   ],
 
 
+  // Narration for the V2 walk (v2/): the opening and closing pages; each stop also carries its own story line.
+  prologue: { title: 'Carnet de route', text: 'Plus de dix ans de code, trente-six pays, un sac à dos. Voici le chemin, escale par escale.', hint: 'Faites défiler pour marcher' },
+  epilogue: { title: 'Prochaine escale ?', text: 'Le carnet reste ouvert. La suite s’écrit peut-être avec vous.' },
+
   stops: [
     {
-      from: '2011-03', place: 'Lyon', country: 'France', coords: [4.84, 45.76], period: '2011 – 2012',
+      from: '2011-03',
+      story: 'Tout commence à Lyon, loin du code : démarchage, distribution, inventaires. Des premiers emplois pour apprendre à parler aux gens.', place: 'Lyon', country: 'France', coords: [4.84, 45.76], period: '2011 – 2012',
       entries: [
         { company: 'INTERVALLES', role: 'Démarcheur / Distributeur', dates: 'mars 2011 – juin 2012' },
         { company: 'RGIS', role: 'Inventoriste', dates: 'mars 2011 – avril 2011' },
       ],
     },
     {
-      from: '2013-06', place: 'Nantes', country: 'France', coords: [-1.55, 47.22], period: '2013 – 2016',
+      from: '2013-06',
+      story: 'Nantes, Accenture. Trois ans de développement sur SAP pour des fournisseurs d’énergie, puis une équipe à coordonner. Le plus gros chantier : refacturer 30 millions de comptes.', place: 'Nantes', country: 'France', coords: [-1.55, 47.22], period: '2013 – 2016',
       entries: [{
         company: 'Accenture', role: 'Développeur | Chef d’équipe', dates: 'juin 2013 – août 2016',
         summary: 'Développement, maintenance applicative et coordination pour des fournisseurs d’énergie, en environnements SAP IS-U et CRM.',
@@ -49,7 +56,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2016-11', place: 'Merredin', country: 'Australie', coords: [118.28, -31.48], period: '2016',
+      from: '2016-11',
+      story: 'Je range le costume. Visa vacances-travail en poche, direction l’Australie-Occidentale, à arpenter des champs à la recherche d’une mauvaise herbe.', place: 'Merredin', country: 'Australie', coords: [118.28, -31.48], period: '2016',
       entries: [{
         company: 'CWC Professional AG Contractors', role: 'Contractant agricole', dates: 'nov. 2016 – déc. 2016',
         summary: 'Détection de Chondrilla juncea dans les champs, dans le cadre d’un visa vacances-travail.',
@@ -57,14 +65,16 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2017-01', place: 'Perth', country: 'Australie', coords: [115.86, -31.95], period: '2017',
+      from: '2017-01',
+      story: 'Perth, sept mois en cuisine. Le rythme d’un service, la brigade, les coups de feu.', place: 'Perth', country: 'Australie', coords: [115.86, -31.95], period: '2017',
       entries: [{
         company: 'Gramercy Bar & Kitchen', role: 'Commis de cuisine', dates: 'janv. 2017 – juil. 2017',
         context: 'Visa vacances-travail',
       }],
     },
     {
-      from: '2017-09', place: 'Dubbo', country: 'Australie', coords: [148.6, -32.25], period: '2017',
+      from: '2017-09',
+      story: 'Cap à l’est, jusqu’à Dubbo : marquage de bovins et d’ovins, au milieu des eucalyptus.', place: 'Dubbo', country: 'Australie', coords: [148.6, -32.25], period: '2017',
       entries: [{
         company: 'J.A. Long & L.A. Cameron', role: 'Contractant agricole', dates: 'sept. 2017 – nov. 2017',
         summary: 'Marquage bovin et ovin.',
@@ -72,7 +82,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2017-11', place: 'Ubud', country: 'Indonésie', coords: [115.26, -8.51], period: '2017',
+      from: '2017-11',
+      story: 'À Bali, le code revient. Premier client en freelance : le site d’un menuisier, avec sa galerie et son devis automatisé.', place: 'Ubud', country: 'Indonésie', coords: [115.26, -8.51], period: '2017',
       entries: [{
         company: 'Freelance', role: 'Développeur front-end', dates: 'nov. 2017 – déc. 2017',
         summary: 'Site vitrine pour un menuisier.',
@@ -83,7 +94,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2018-02', place: 'George Town', country: 'Malaisie', coords: [100.33, 5.41], remoteFrom: [
+      from: '2018-02',
+      story: 'Une plateforme de réservation pour une agence de Penang, codée sur la route, de Munich à Bangkok.', place: 'George Town', country: 'Malaisie', coords: [100.33, 5.41], remoteFrom: [
         ['Munich, Allemagne', 11.58, 48.14], ['Prague, Tchéquie', 14.42, 50.09], ['Vienne, Autriche', 16.37, 48.21], ['Bratislava, Slovaquie', 17.11, 48.15],
         ['Budapest, Hongrie', 19.04, 47.5], ['Sofia, Bulgarie', 23.32, 42.7], ['Bangkok, Thaïlande', 100.5, 13.75],
       ], remoteRoute: true, period: '2018',
@@ -98,7 +110,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2018-05', place: 'Taichung', country: 'Taïwan', coords: [120.68, 24.15], period: '2018',
+      from: '2018-05',
+      story: 'Taïwan : le site d’un hôtel, son calendrier de disponibilités et son paiement en ligne.', place: 'Taichung', country: 'Taïwan', coords: [120.68, 24.15], period: '2018',
       entries: [{
         company: 'Freelance', role: 'Développeur front-end', dates: 'mai 2018 – juin 2018',
         summary: 'Site web d’un hôtel et son parcours de réservation.',
@@ -110,7 +123,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2018-09', place: 'Kuala Lumpur', country: 'Malaisie', coords: [101.69, 3.14], remoteFrom: ['Langkawi, Malaisie', 99.73, 6.35], period: '2018',
+      from: '2018-09',
+      story: 'Kuala Lumpur, et un projet qui compte : une API qui oriente les ambulances selon la spécialité, la distance et le trafic.', place: 'Kuala Lumpur', country: 'Malaisie', coords: [101.69, 3.14], remoteFrom: ['Langkawi, Malaisie', 99.73, 6.35], period: '2018',
       entries: [{
         company: 'Freelance', role: 'Développeur back-end', dates: 'sept. 2018 – déc. 2018',
         summary: 'API de géolocalisation et d’aide à l’orientation pour une société d’ambulances.',
@@ -123,7 +137,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2019-01', place: 'Malacca', country: 'Malaisie', coords: [102.25, 2.19], remoteFrom: [['Die, France', 5.37, 44.75], ['Lyon, France', 4.84, 45.76], ['Nantes, France', -1.55, 47.22]], period: '2019',
+      from: '2019-01',
+      story: 'Malacca, depuis la France cette fois : le front d’une application de gestion budgétaire, en serverless.', place: 'Malacca', country: 'Malaisie', coords: [102.25, 2.19], remoteFrom: [['Die, France', 5.37, 44.75], ['Lyon, France', 4.84, 45.76], ['Nantes, France', -1.55, 47.22]], period: '2019',
       entries: [{
         company: 'Freelance', role: '(Lead) Développeur front-end', dates: 'janv. 2019 – juin 2019',
         summary: 'Front-end d’une application serverless de gestion budgétaire pour un indépendant.',
@@ -135,11 +150,13 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2019-11', place: 'Bouguenais', country: 'France', coords: [-1.62, 47.18], period: '2019',
+      from: '2019-11',
+      story: 'Retour à Nantes, sur le tarmac : deux mois comme agent de trafic à l’aéroport.', place: 'Bouguenais', country: 'France', coords: [-1.62, 47.18], period: '2019',
       entries: [{ company: 'AviaPartner Nantes-Atlantique', role: 'Agent de trafic', dates: 'nov. 2019 – déc. 2019' }],
     },
     {
-      from: '2020-02', place: 'Kuala Lumpur', country: 'Malaisie', coords: [101.69, 3.14], remoteFrom: ['Nantes, France', -1.55, 47.22], period: '2020',
+      from: '2020-02',
+      story: 'Kuala Lumpur encore, à distance : un chatbot de support adossé à plus de 500 questions fréquentes.', place: 'Kuala Lumpur', country: 'Malaisie', coords: [101.69, 3.14], remoteFrom: ['Nantes, France', -1.55, 47.22], period: '2020',
       entries: [{
         company: 'Freelance', role: 'Développeur full-stack', dates: 'fév. 2020 – mai 2020',
         summary: 'Outil de support client automatisé pour une plateforme multiservice.',
@@ -150,7 +167,8 @@ window.PROFILE = {
       }],
     },
     {
-      type: 'formation', from: '2020-06', place: 'En ligne', label: 'Formation', period: '2020',
+      type: 'formation', from: '2020-06',
+      story: 'Je mets un titre sur la pratique : développeur web et web mobile, suivi en ligne entre Die, Londres et Istanbul.', place: 'En ligne', label: 'Formation', period: '2020',
       remoteFrom: [['Die, France', 5.37, 44.75], ['Londres, Royaume-Uni', -0.13, 51.51], ['Bucarest, Roumanie', 26.1, 44.43], ['Varna, Bulgarie', 27.91, 43.21], ['Bourgas, Bulgarie', 27.47, 42.51], ['Istanbul, Turquie', 28.98, 41.01], ['Die, France', 5.37, 44.75]], remoteRoute: true,
       entries: [{
         company: 'ENI École Informatique', role: 'Développeur web et web mobile', dates: 'juin 2020 – nov. 2020', remote: true,
@@ -158,7 +176,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2020-11', place: 'Biarritz', country: 'France', coords: [-1.56, 43.48], remoteFrom: [['Istanbul, Turquie', 28.98, 41.01], ['Die, France', 5.37, 44.75]], remoteRoute: true, period: '2020 – 2021',
+      from: '2020-11',
+      story: 'The Inspire Academy : une application de cours et de réservation, conçue et livrée en deux semaines.', place: 'Biarritz', country: 'France', coords: [-1.56, 43.48], remoteFrom: [['Istanbul, Turquie', 28.98, 41.01], ['Die, France', 5.37, 44.75]], remoteRoute: true, period: '2020 – 2021',
       entries: [{
         company: 'The Inspire Academy', role: 'Développeur full-stack', dates: 'nov. 2020 – janv. 2021',
         summary: 'Application de vente de cours et de réservation de cours particuliers, conçue et livrée en deux semaines.',
@@ -171,7 +190,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2021-02', place: 'Istanbul', country: 'Turquie', coords: [28.98, 41.01], remoteFrom: [['Die, France', 5.37, 44.75], 'sur place', ['Charm el-Cheikh, Égypte', 34.33, 27.92]], remoteRoute: true, period: '2021',
+      from: '2021-02',
+      story: 'Istanbul, en lead : une plateforme de vente d’œuvres pour un collectif d’artistes.', place: 'Istanbul', country: 'Turquie', coords: [28.98, 41.01], remoteFrom: [['Die, France', 5.37, 44.75], 'sur place', ['Charm el-Cheikh, Égypte', 34.33, 27.92]], remoteRoute: true, period: '2021',
       entries: [{
         company: 'Freelance', role: '(Lead) Développeur full-stack', dates: 'fév. 2021 – juin 2021',
         summary: 'Plateforme de vente d’œuvres d’art pour un collectif d’artistes.',
@@ -183,7 +203,8 @@ window.PROFILE = {
       }],
     },
     {
-      type: 'formation', from: '2021-06', place: 'En ligne', label: 'Formation', period: '2021 – 2022',
+      type: 'formation', from: '2021-06',
+      story: 'Un an pour passer architecte : le titre d’expert en architecture logicielle, suivi du Caire à Lima.', place: 'En ligne', label: 'Formation', period: '2021 – 2022',
       remoteFrom: [['Le Caire, Égypte', 31.24, 30.04], ['Nantes, France', -1.55, 47.22], ['Playa del Carmen, Mexique', -87.07, 20.63], ['Bogota, Colombie', -74.07, 4.71], ['Lima, Pérou', -77.04, -12.05]], remoteRoute: true,
       entries: [{
         company: 'OpenClassrooms', role: 'Expert en développement logiciel, architecture logicielle', dates: 'juin 2021 – juin 2022', remote: true,
@@ -191,7 +212,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2022-05', place: 'Lima', country: 'Pérou', coords: [-77.04, -12.05], period: '2022',
+      from: '2022-05',
+      story: 'Lima, premier cadrage d’architecte : le MVP d’un assureur, de l’architecture cible jusqu’au budget.', place: 'Lima', country: 'Pérou', coords: [-77.04, -12.05], period: '2022',
       entries: [{
         company: 'Freelance', role: 'Architecte logiciel', dates: 'mai 2022 – juil. 2022',
         summary: 'Cadrage technique d’un MVP pour une société d’assurance.',
@@ -203,7 +225,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2022-08', place: 'Lyon', country: 'France', coords: [4.84, 45.76], period: '2022 – 2023',
+      from: '2022-08',
+      story: 'Retour à Lyon, dix ans après. Développeur full-stack sénior chez Rubrash : deux produits, du rendu serveur aux appels vidéo.', place: 'Lyon', country: 'France', coords: [4.84, 45.76], period: '2022 – 2023',
       entries: [{
         company: 'Rubrash · Working in Lyon', role: 'Développeur full-stack sénior', dates: 'août 2022 – mars 2023',
         summary: 'Deux produits : une plateforme de contenus pour une société de gestion de patrimoine et une application logistique pour la grande distribution.',
@@ -216,7 +239,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2023-03', place: 'Nantes', country: 'France', coords: [-1.55, 47.22], period: '2023 – aujourd’hui',
+      from: '2023-03',
+      story: 'À mon tour de transmettre : mentorat, formation, jurys. Une dizaine d’apprenants menés jusqu’au titre.', place: 'Nantes', country: 'France', coords: [-1.55, 47.22], period: '2023 – aujourd’hui',
       label: 'Transmission',
       entries: [
         {
@@ -234,7 +258,8 @@ window.PROFILE = {
       ],
     },
     {
-      from: '2025-03', place: 'Nantes', country: 'France', coords: [-1.55, 47.22], period: '2025 – aujourd’hui',
+      from: '2025-03',
+      story: 'HiPay, le paiement : APIs, encaissement sur mobile, clean architecture, et l’IA dans les outils de l’équipe.', place: 'Nantes', country: 'France', coords: [-1.55, 47.22], period: '2025 – aujourd’hui',
       label: 'Paiement',
       entries: [{
         company: 'HiPay', role: 'Ingénieur logiciel sénior', dates: 'mars 2025 – aujourd’hui',
@@ -250,7 +275,8 @@ window.PROFILE = {
       }],
     },
     {
-      from: '2026-01', place: 'Paris', country: 'France', coords: [2.35, 48.86], remoteFrom: ['Saint-Herblain, France', -1.65, 47.21], period: '2026',
+      from: '2026-01',
+      story: 'En parallèle, tout le back-end d’une plateforme qui relie artistes et clients, en production pour 5 € par mois.', place: 'Paris', country: 'France', coords: [2.35, 48.86], remoteFrom: ['Saint-Herblain, France', -1.65, 47.21], period: '2026',
       label: 'Freelance',
       entries: [{
         company: 'Freelance', role: '(Lead) Architecte logiciel et développeur back-end', dates: 'janv. 2026 – juin 2026',
