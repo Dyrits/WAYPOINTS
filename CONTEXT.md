@@ -51,5 +51,5 @@ Un bond ludique du marcheur déclenché par le visiteur, sans effet sur le parco
 _Avoid_: Action, interaction
 
 **Sac à dos**:
-L'inventaire des compétences acquises au fil des escales passées.
+L'inventaire des compétences acquises au fil des escales passées ; le marcheur le porte dès la première escale, dans toutes les tenues.
 _Avoid_: Compétences, skills, inventaire
